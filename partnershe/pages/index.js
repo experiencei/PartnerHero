@@ -1,5 +1,6 @@
 import Head from "next/head";
 
+import Sidebar from "../components/Sidebar"
 
 const Home = () => {
 
@@ -9,7 +10,7 @@ const Home = () => {
         <title>Spotify - Dashboard</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h2>hELLO WORLD</h2>
+      <Sidebar />
     </div>
   );
 
