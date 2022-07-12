@@ -1,10 +1,43 @@
- import { BsFillPauseFill, BsFillPlayFill } from "react-icons/bs";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+
+import { BsFillPauseFill, BsFillPlayFill } from "react-icons/bs";
 import { useRecoilState } from "recoil";
-import { playingTrackState, playState } from "../atoms/playerAtom";
+import { libraryState, playingTrackState, playState } from "../atoms/playerAtom";
+import {
+  CheckIcon,
+  PlusIcon,
+} from '@heroicons/react/outline';
+
+import {
+  collection,
+  deleteDoc,
+  doc,
+  DocumentData,
+  onSnapshot,
+  setDoc,
+} from 'firebase/firestore';
+import { db } from '../utils/firebase'
+import toast, { Toaster } from 'react-hot-toast'
 
 function Poster({ track, chooseTrack }) {
+  const {data : session} = useSession();
   const [play, setPlay] = useRecoilState(playState);
   const [playingTrack, setPlayingTrack] = useRecoilState(playingTrackState);
+  const [library, setLibrary] = useRecoilState(libraryState);
+  const [libraries , setLibraries] = useState([]);
+  const [addedToList, setAddedToList] = useState(false)
+  
+
+  const toastStyle = {
+    background: 'white',
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: '16px',
+    padding: '15px',
+    borderRadius: '9999px',
+    maxWidth: '1000px',
+  }
 
   const handlePlay = () => {
     chooseTrack(track);
@@ -14,6 +47,56 @@ function Poster({ track, chooseTrack }) {
     }
   };
 
+   // Find all the music in the user's list
+   useEffect(() => {
+    if (session) {
+      return onSnapshot(
+        collection(db, 'customers', session.user.email, 'myLibrary'),
+        (snapshot) => setLibraries(snapshot.docs)
+      )
+    }
+  }, [db, session.user?.email]);
+
+
+  // Check if the music is already in the user's list
+  useEffect(
+    () =>
+      setAddedToList(
+        libraries.findIndex((result) => result.data().id === library?.id) !== -1
+      ),
+    [libraries]
+  );
+
+  const handleList = async () => {
+    if (addedToList) {
+      await deleteDoc(
+        doc(db, 'customers', session.user.email, 'myList', library?.id.toString())
+      )
+
+      toast(
+        `${library?.title} has been removed from My Library`,
+        {
+          duration: 8000,
+          style: toastStyle,
+        }
+      )
+    } else {
+      await setDoc(
+        doc(db, 'customers', session.user.email, '', library?.id.toString()),
+        {
+          ...library,
+        }
+      )
+
+      toast(
+        `${library?.title} has been added to My Library.`,
+        {
+          duration: 8000,
+          style: toastStyle,
+        }
+      )
+    }
+  }
   return (
     <div
       className="w-[260px] h-[360px] rounded-[50px] overflow-hidden relative text-white/80 cursor-pointer hover:scale-105 hover:text-white/100 transition duration-200 ease-out group mx-auto"
@@ -33,7 +116,15 @@ function Poster({ track, chooseTrack }) {
             <BsFillPlayFill className="text-white text-xl ml-[1px]" />
           )}
         </div>
-
+        <div>
+        <button className="modalButton" onClick={handleList}>
+                {addedToList ? (
+                  <CheckIcon className="h-7 w-7" />
+                ) : (
+                  <PlusIcon className="h-7 w-7" />
+                )}
+        </button>
+        </div>
         <div className="text-[15px]">
           <h4 className="font-extrabold truncate w-44">{track.title}</h4>
           <h6>{track.artist}</h6>
