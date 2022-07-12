@@ -1,6 +1,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { ToastContainer } from "react-toastify";
+
 import Dashboard from "../components/Dashboard";
 import Loader from "../components/Loader";
 
@@ -26,6 +28,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Dashboard />
+      <ToastContainer autoClose={2000} />
+
     </div>
   );
 }

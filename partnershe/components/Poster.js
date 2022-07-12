@@ -19,8 +19,9 @@ import {
   addDoc
 } from 'firebase/firestore';
 import { db } from '../utils/firebase'
-import toast, { Toaster } from 'react-hot-toast'
-// import 'react-toastify/dist/ReactToastify.css'
+// import toast, { Toaster } from 'react-hot-toast'
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
 
 function Poster({ track, chooseTrack }) {
   const {data : session} = useSession();
@@ -91,13 +92,14 @@ function Poster({ track, chooseTrack }) {
         }
       )
       // alert(`${track?.name} has been added to My Library.`)
-      toast(
-        `${track?.name} has been added to My Library.`,
-        {
-          duration: 8000,
-          style: toastStyle,
-        }
-      )
+      // toast(
+      //   `${track?.name} has been added to My Library.`,
+      //   {
+      //     duration: 8000,
+      //     style: toastStyle,
+      //   }
+      // )
+      toast.success(`${track?.name} has been added to My Library.`)
     }
   }
   return (
