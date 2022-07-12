@@ -16,15 +16,17 @@ import {
   DocumentData,
   onSnapshot,
   setDoc,
+  addDoc
 } from 'firebase/firestore';
 import { db } from '../utils/firebase'
 import toast, { Toaster } from 'react-hot-toast'
+// import 'react-toastify/dist/ReactToastify.css'
 
 function Poster({ track, chooseTrack }) {
   const {data : session} = useSession();
   const [play, setPlay] = useRecoilState(playState);
   const [playingTrack, setPlayingTrack] = useRecoilState(playingTrackState);
-  const [library, setLibrary] = useRecoilState(libraryState);
+  // const [library, setLibrary] = useRecoilState(libraryState);
   const [libraries , setLibraries] = useState([]);
   const [addedToList, setAddedToList] = useState(false)
   
@@ -54,15 +56,16 @@ function Poster({ track, chooseTrack }) {
         collection(db, 'customers', session.user.email, 'myLibrary'),
         (snapshot) => setLibraries(snapshot.docs)
       )
+
     }
-  }, [db, session.user?.email]);
+  }, [db, session]);
 
 
   // Check if the music is already in the user's list
   useEffect(
     () =>
       setAddedToList(
-        libraries.findIndex((result) => result.data().id === library?.id) !== -1
+        libraries.findIndex((result) => result.data().id === track?.id) !== -1
       ),
     [libraries]
   );
@@ -70,26 +73,26 @@ function Poster({ track, chooseTrack }) {
   const handleList = async () => {
     if (addedToList) {
       await deleteDoc(
-        doc(db, 'customers', session.user.email, 'myList', library?.id.toString())
+        collection(db, 'customers', session.user.email, 'myLibrary', track?.id.toString())
       )
-
+    //  alert(`${track?.name} has been removed from My Library`)
       toast(
-        `${library?.title} has been removed from My Library`,
+        `${track?.name} has been removed from My Library`,
         {
           duration: 8000,
           style: toastStyle,
         }
       )
     } else {
-      await setDoc(
-        doc(db, 'customers', session.user.email, '', library?.id.toString()),
+      await addDoc(
+        collection(db, 'customers', session.user.email, '', track?.id.toString()),
         {
-          ...library,
+          ...track,
         }
       )
-
+      // alert(`${track?.name} has been added to My Library.`)
       toast(
-        `${library?.title} has been added to My Library.`,
+        `${track?.name} has been added to My Library.`,
         {
           duration: 8000,
           style: toastStyle,

@@ -13,6 +13,7 @@ export default function Home() {
     },
   });
 
+  // console.log(session.user.email);
   // Loading animation...
   if (status === "loading") {
     return <Loader />;
