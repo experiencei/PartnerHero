@@ -9,7 +9,7 @@ import Body from "./Body";
 import Right from "./Right";
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
+  clientId: process.env.SPOTIFYCLIENTID,
 });
 
 function Dashboard() {
