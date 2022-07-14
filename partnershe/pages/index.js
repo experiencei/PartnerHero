@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div className="">
       <Head>
-        <title>Spotify - Dashboard</title>
+        <title>Spotify</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Dashboard />
