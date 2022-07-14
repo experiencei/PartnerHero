@@ -1,5 +1,5 @@
 export const addMusicToLibrary = (library, musicToAdd) => {
-    return [...library,...musicToAdd];
+    return [library].push(musicToAdd);
   };
 
 export const removeMusicFromLibrary = (library, musicToRemove) => {

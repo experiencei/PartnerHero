@@ -7,7 +7,9 @@ import { useRecoilState } from "recoil";
 import { playingTrackState, playState } from "../../atoms/playerAtom";
 import { ImHeadphones } from "react-icons/im";
 
-function MyLibrary({ track, chooseTrack }) {
+function MyLibrary({track}) {
+  
+
   const [hasLiked, setHasLiked] = useState(false);
   const [play, setPlay] = useRecoilState(playState);
   const [playingTrack, setPlayingTrack] = useRecoilState(playingTrackState);
@@ -21,6 +23,11 @@ function MyLibrary({ track, chooseTrack }) {
   };
 
   return (
+    <> 
+    <h2 className="text-white font-bold mb-3 text-center mt-7">
+            My Library
+      </h2>
+
     <div className="flex items-center justify-between space-x-20 cursor-default hover:bg-white/10 py-2 px-4 rounded-lg group transition ease-out">
       <div className="flex items-center">
         <img
@@ -72,7 +79,12 @@ function MyLibrary({ track, chooseTrack }) {
         </div>
       </div>
     </div>
+   </>
   );
 }
 
-export default MyLibrary;
+const mapStateToProps = (state, ownProps) => ({
+  track : state.mylibrary
+});
+
+export default connect(mapStateToProps)(MyLibrary);

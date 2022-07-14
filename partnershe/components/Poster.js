@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { connect } from 'react-redux';
 
 import { BsFillPauseFill, BsFillPlayFill } from "react-icons/bs";
 import { useRecoilState } from "recoil";
@@ -20,10 +21,11 @@ import {
 } from 'firebase/firestore';
 import { db } from '../utils/firebase'
 import toast, { Toaster } from 'react-hot-toast'
+import { removeMusic , addMusic  } from "../redux/MyLibrarys/mylibrary-actions";
 // import { toast } from "react-toastify";
 // import 'react-toastify/dist/ReactToastify.css'
 
-function Poster({ track, chooseTrack }) {
+function Poster({ track, chooseTrack , addtoLibrary , removefromLibrary }) {
   const {data : session} = useSession();
   const [play, setPlay] = useRecoilState(playState);
   const [playingTrack, setPlayingTrack] = useRecoilState(playingTrackState);
@@ -72,6 +74,7 @@ function Poster({ track, chooseTrack }) {
 
   const handleList = async () => {
     if (addedToList) {
+      removefromLibrary(track)
       await deleteDoc(
         collection(db, 'customers', session.user.email, 'myLibrary', track?.id.toString())
       )
@@ -84,6 +87,8 @@ function Poster({ track, chooseTrack }) {
         }
       )
     } else {
+      console.log(track)
+      addtoLibrary(track)
       await addDoc(
         collection(db, 'customers', session.user.email, '', track?.id.toString()),
         {
@@ -100,6 +105,7 @@ function Poster({ track, chooseTrack }) {
       )
     }
   }
+  
   return (
     <div
       className="w-[260px] h-[360px] rounded-[50px] overflow-hidden relative text-white/80 cursor-pointer hover:scale-105 hover:text-white/100 transition duration-200 ease-out group mx-auto"
@@ -137,4 +143,10 @@ function Poster({ track, chooseTrack }) {
   );
 }
 
-export default Poster;
+const mapDispatchToProps = dispatch => ({
+ addtoLibrary: item => dispatch(addMusic(item)),
+  removefromLibrary: item => dispatch(removeMusic(item))
+});
+
+
+export default connect(null , mapDispatchToProps)(Poster);
